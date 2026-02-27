@@ -1,116 +1,144 @@
 :root {
-    --primary: #2563eb;
-    --primary-light: #dbeafe;
-    --text: #1f2937;
-    --muted: #6b7280;
-    --border: #e5e7eb;
-    --bg: #ffffff;
-  }
-  
-  body {
-    font-family: 'Segoe UI', sans-serif;
-    background: #f3f4f6;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  }
-  
-  .datepicker-wrapper {
-    position: relative;
-    width: 260px;
-  }
-  
-  #dateInput {
-    width: 100%;
-    padding: 10px 12px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    font-size: 14px;
-    cursor: pointer;
-    background: var(--bg);
-  }
-  
-  .datepicker {
-    position: absolute;
-    top: 110%;
-    left: 0;
-    width: 100%;
-    background: var(--bg);
-    border-radius: 12px;
-    box-shadow: 0 15px 30px rgba(0,0,0,0.08);
-    padding: 15px;
-    opacity: 0;
-    transform: translateY(10px);
-    pointer-events: none;
-    transition: 0.25s ease;
-    z-index: 10;
-  }
-  
-  .datepicker.active {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
-  }
-  
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    font-weight: 600;
-  }
-  
-  .header button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    padding: 4px 8px;
-    border-radius: 6px;
-    color: var(--primary);
-    transition: 0.2s;
-  }
-  
-  .header button:hover {
-    background: var(--primary-light);
-  }
-  
-  .weekdays, .days {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    text-align: center;
-  }
-  
-  .weekdays div {
-    font-size: 12px;
-    color: var(--muted);
-    margin-bottom: 6px;
-  }
-  
-  .days div {
-    padding: 8px 0;
-    margin: 2px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.2s;
-    font-size: 14px;
-  }
-  
-  .days div:hover {
-    background: var(--primary-light);
-  }
-  
-  .today {
-    border: 1px solid var(--primary);
-  }
-  
-  .selected {
-    background: var(--primary);
-    color: white;
-  }
-  
-  .inactive {
-    color: #cbd5e1;
-    pointer-events: none;
-  }
+  --primary: #2563eb;
+  --primary-light: #dbeafe;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --bg: #ffffff;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #f3f4f6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  display: flex;
+  gap: 30px;
+}
+
+.datepicker-wrapper {
+  position: relative;
+  width: 260px;
+}
+
+#dateInput {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+}
+
+.datepicker {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  width: 100%;
+  background: var(--bg);
+  border-radius: 12px;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+  padding: 15px;
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+  transition: 0.25s ease;
+}
+
+.datepicker.active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.header button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--primary);
+}
+
+.weekdays, .days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+}
+
+.weekdays div {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.days div {
+  padding: 8px;
+  margin: 2px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.days div:hover {
+  background: var(--primary-light);
+}
+
+.selected {
+  background: var(--primary);
+  color: white;
+}
+
+.today {
+  border: 1px solid var(--primary);
+}
+
+.event-panel {
+  width: 250px;
+  background: var(--bg);
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+#eventList {
+  margin: 10px 0;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.event-item {
+  background: var(--primary-light);
+  padding: 6px 8px;
+  margin-bottom: 6px;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.event-input {
+  display: flex;
+  gap: 5px;
+}
+
+#eventText {
+  flex: 1;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+#addEventBtn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
