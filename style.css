@@ -162,6 +162,10 @@ body {
   font-size: 13px;
 }
 
+.event-item span {
+  margin-right: 5px;
+}
+
 .event-input {
   display: flex;
   gap: 5px;

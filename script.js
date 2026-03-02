@@ -39,6 +39,13 @@ function getEventCategory() {
   return category ? category.value : null;
 }
 function displayEvents(date) {
+  const categoryColors = {
+    work: 'blue',
+    personal: 'green',
+    school: 'yellow',
+    urgent: 'red'
+  };
+
   eventList.innerHTML = "";
   const key = formatDateKey(date);
   eventTitle.textContent = `Events for ${date.toDateString()}`;
@@ -47,9 +54,21 @@ function displayEvents(date) {
     events[key].forEach((event, index )=> {
       const div = document.createElement("div");
       div.className = "event-item";
-      div.textContent = event;
+      let categoryText = event.category ? event.category.charAt(0).toUpperCase() + event.category.slice(1) : '';
+
+      if (categoryText) {
+        let categorySpan = document.createElement('span');
+        categorySpan.textContent = `[${categoryText}]`;
+        categorySpan.style.color = categoryColors[event.category] || 'black'; // Default color
+        div.appendChild(categorySpan);
+      }
+
+
+      div.append(event.text);
       div.dataset.category = event.category; // Store category on the element
-      div.classList.add(`event-${event.category}`); // Add category class for styling
+      div.dataset.index = index;
+
+      div.classList.toggle('event-urgent', event.category === 'urgent');
       const deleteBtn = document.createElement("button");
       deleteBtn.textContent = "Delete";
       deleteBtn.style.marginLeft = "5px"; // Add some spacing
@@ -103,21 +122,26 @@ addEventBtn.addEventListener("click", () => {
   displayEvents(selectedDate);
 });
 
+let isUrgent = false;
 urgentBtn.addEventListener("click", () => {
   if (!selectedDate) return;
 
   const key = formatDateKey(selectedDate);
 
-  if (events[key] && events[key].length > 0) {
-    // Assuming you want to mark all events on that day as urgent
-    events[key].forEach(event => {
+  if (!events[key]) return;
+
+  events[key].forEach((event, index) => {
+    if (isUrgent) {
+      event.category = getEventCategory() || 'default';
+    } else {
       event.category = 'urgent';
+    }
     });
 
     localStorage.setItem("calendarEvents", JSON.stringify(events));
     displayEvents(selectedDate);
     renderCalendar(currentDate); // Re-render to update dots
-  }
+    isUrgent = !isUrgent;
 });
 
 
@@ -147,7 +171,15 @@ function renderCalendar(date) {
 
   for (let i = 1; i <= lastDate; i++) {
     const day = document.createElement("div");
+    day.classList.add("day");
     day.textContent = i;
+    day.style.position = 'relative';
+
+    if (hasEvents(new Date(year, month, i))) {
+      day.classList.add('has-event');
+      let eventCategory = getEventCategory();
+      if (eventCategory) day.classList.add(`event-dot-${eventCategory}`);
+    }
 
     const thisDate = new Date(year, month, i);
 
