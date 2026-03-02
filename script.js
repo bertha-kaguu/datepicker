@@ -6,11 +6,16 @@ const eventText = document.getElementById("eventText");
 const addEventBtn = document.getElementById("addEventBtn");
 const urgentCheckbox = document.getElementById("urgentCheckbox");
 const themeToggle = document.getElementById("themeToggle");
+const prevMonthBtn = document.getElementById("prevMonth");
+const nextMonthBtn = document.getElementById("nextMonth");
 
 let currentDate = new Date();
 let selectedDate = null;
+
+/* ---------------- LOAD EVENTS ---------------- */
 let events = JSON.parse(localStorage.getItem("calendarEvents")) || {};
 
+/* ---------------- FORMAT DATE KEY ---------------- */
 function formatDateKey(date) {
   return date.toISOString().split("T")[0];
 }
@@ -20,12 +25,25 @@ function saveEvents() {
   localStorage.setItem("calendarEvents", JSON.stringify(events));
 }
 
-/* ---------------- CLEAN EMPTY DATES ---------------- */
+/* ---------------- CLEAN A SINGLE EMPTY DATE ---------------- */
 function cleanEmptyDate(key) {
   if (events[key] && events[key].length === 0) {
-    delete events[key]; // remove empty date completely
+    delete events[key];
   }
 }
+
+/* ---------------- CLEAN ALL EMPTY DATES ON LOAD ---------------- */
+function cleanAllEmptyDates() {
+  for (let key in events) {
+    if (!Array.isArray(events[key]) || events[key].length === 0) {
+      delete events[key];
+    }
+  }
+  saveEvents();
+}
+
+/* 🔥 CLEAN OLD STORAGE IMMEDIATELY */
+cleanAllEmptyDates();
 
 /* ---------------- RENDER CALENDAR ---------------- */
 function renderCalendar(date) {
@@ -49,7 +67,7 @@ function renderCalendar(date) {
     const fullDate = new Date(year, month, i);
     const key = formatDateKey(fullDate);
 
-    // Show dot ONLY if date exists AND has events
+    /* SHOW DOT ONLY IF REAL EVENTS EXIST */
     if (events[key] && events[key].length > 0) {
       const dot = document.createElement("div");
       dot.classList.add("day-dot");
@@ -118,10 +136,11 @@ function showEventActions(div, key, index) {
 
   editBtn.onclick = () => {
     eventText.value = events[key][index].text;
-    events[key].splice(index, 1);
 
+    events[key].splice(index, 1);
     cleanEmptyDate(key);
     saveEvents();
+
     displayEvents(selectedDate);
     renderCalendar(currentDate);
   };
@@ -129,8 +148,9 @@ function showEventActions(div, key, index) {
   deleteBtn.onclick = () => {
     events[key].splice(index, 1);
 
-    cleanEmptyDate(key);   // 🔥 IMPORTANT FIX
-    saveEvents();          // 🔥 SAVE IMMEDIATELY
+    cleanEmptyDate(key);
+    saveEvents();
+
     displayEvents(selectedDate);
     renderCalendar(currentDate);
   };
@@ -153,7 +173,7 @@ addEventBtn.addEventListener("click", () => {
     urgent: urgentCheckbox.checked
   });
 
-  saveEvents();  // 🔥 SAVE IMMEDIATELY
+  saveEvents();
 
   eventText.value = "";
   urgentCheckbox.checked = false;
@@ -174,4 +194,22 @@ themeToggle.addEventListener("click", () => {
   }
 });
 
+/* ---------------- INITIAL RENDER ---------------- */
 renderCalendar(currentDate);
+prevMonthBtn.addEventListener("click", () => {
+  currentDate = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth() - 1,
+    1
+  );
+  renderCalendar(currentDate);
+});
+
+nextMonthBtn.addEventListener("click", () => {
+  currentDate = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth() + 1,
+    1
+  );
+  renderCalendar(currentDate);
+});
