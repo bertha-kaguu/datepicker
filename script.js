@@ -96,7 +96,7 @@ function renderCalendar(date) {
       dateInput.value = selectedDate.toLocaleDateString();
       datepicker.classList.remove("active");
       renderCalendar(currentDate);
-      renderEvents(selectedDate);
+      displayEvents(selectedDate);
     });
 
     daysContainer.appendChild(day);
