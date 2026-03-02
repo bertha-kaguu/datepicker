@@ -12,8 +12,12 @@ const eventTitle = document.getElementById("eventTitle");
 
 let currentDate = new Date();
 let selectedDate = null;
-let events = JSON.parse(localStorage.getItem("calendarEvents")) || {};
-
+let events = {};
+try {
+    events = JSON.parse(localStorage.getItem("calendarEvents")) || {};
+} catch (e) {
+    console.error("Could not parse calendar events from local storage", e);
+}
 dateInput.addEventListener("click", () => {
   datepicker.classList.toggle("active");
 });
@@ -22,7 +26,7 @@ function formatDateKey(date) {
   return date.toISOString().split("T")[0];
 }
 
-function renderEvents(date) {
+function displayEvents(date) {
   eventList.innerHTML = "";
   const key = formatDateKey(date);
   eventTitle.textContent = `Events for ${date.toDateString()}`;
@@ -47,7 +51,7 @@ addEventBtn.addEventListener("click", () => {
   localStorage.setItem("calendarEvents", JSON.stringify(events));
 
   eventText.value = "";
-  renderEvents(selectedDate);
+  displayEvents(selectedDate);
 });
 
 function renderCalendar(date) {
