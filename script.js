@@ -122,6 +122,7 @@ addEventBtn.addEventListener("click", () => {
   displayEvents(selectedDate);
 });
 
+let isUrgent = false;
 urgentBtn.addEventListener("click", () => {
   if (!selectedDate || !eventList.hasChildNodes()) return;
 
@@ -131,12 +132,14 @@ urgentBtn.addEventListener("click", () => {
 
   eventItems.forEach(item => {
     let index = item.dataset.index;
-    if (item.classList.contains('event-urgent')) {
-      item.classList.remove('event-urgent');
-      events[key][index].category = getEventCategory() || 'default';
-    } else {
-      item.classList.add('event-urgent');
-      events[key][index].category = 'urgent';
+    if (events[key] && events[key][index]) {
+      if (item.classList.contains('event-urgent')) {
+        item.classList.remove('event-urgent');
+        events[key][index].category = getEventCategory() || 'default';
+      } else {
+        item.classList.add('event-urgent');
+        events[key][index].category = 'urgent';
+      }
     }
     });
 
