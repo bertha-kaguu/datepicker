@@ -1,253 +1,166 @@
-let selectedEventIndex = null;
-// Load saved theme
-const savedTheme = localStorage.getItem('theme');
-
-if (savedTheme === 'dark') {
-  document.documentElement.setAttribute('data-theme', 'dark');
-}
-const dateInput = document.getElementById("dateInput");
-const datepicker = document.getElementById("datepicker");
-const daysContainer = document.getElementById("days");
+const calendar = document.getElementById("calendar");
 const monthYear = document.getElementById("monthYear");
-const prevBtn = document.getElementById("prev");
-const nextBtn = document.getElementById("next");
-
+const eventsList = document.getElementById("eventsList");
 const eventText = document.getElementById("eventText");
-const addEventBtn = document.getElementById("addEventBtn");
-const eventList = document.getElementById("eventList");
-const eventTitle = document.getElementById("eventTitle");
-const urgentBtn = document.getElementById("urgentBtn");
-const themeToggleBtn = document.getElementById("theme-toggle");
 
+const addEventBtn = document.getElementById("addEventBtn");
+const editBtn = document.getElementById("editBtn");
+const urgentBtn = document.getElementById("urgentBtn");
+const deleteBtn = document.getElementById("deleteBtn");
+const themeToggle = document.getElementById("themeToggle");
 
 let currentDate = new Date();
 let selectedDate = null;
-let events = {};
-try {
-    events = JSON.parse(localStorage.getItem("calendarEvents")) || {};
-} catch (e) {
-    console.error("Could not parse calendar events from local storage", e);
-}
-dateInput.addEventListener("click", () => {
-  datepicker.classList.toggle("active");
-});
+let selectedEventIndex = null;
+
+let events = JSON.parse(localStorage.getItem("calendarEvents")) || {};
 
 function formatDateKey(date) {
   return date.toISOString().split("T")[0];
 }
-function getEventCategory() {
-  let category = document.querySelector('input[name="eventCategory"]:checked');
-  return category ? category.value : null;
-}
-function displayEvents(date) {
-  const categoryColors = {
-    work: 'blue',
-    personal: 'green',
-    school: 'yellow',
-    urgent: 'red'
-  };
-  div.addEventListener("click", () => {
-    document.querySelectorAll(".event-item").forEach(item =>
-      item.classList.remove("active-event")
-    );
-  
-    div.classList.add("active-event");
-    selectedEventIndex = index;
+
+function renderCalendar(date) {
+  calendar.innerHTML = "";
+
+  const year = date.getFullYear();
+  const month = date.getMonth();
+
+  monthYear.textContent = date.toLocaleString("default", {
+    month: "long",
+    year: "numeric"
   });
 
-  eventList.innerHTML = "";
-  const key = formatDateKey(date);
-  eventTitle.textContent = `Events for ${date.toDateString()}`;
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  if (events[key]) {
-    events[key].forEach((event, index )=> {
-      const div = document.createElement("div");
-      div.className = "event-item";
-      let categoryText = event.category ? event.category.charAt(0).toUpperCase() + event.category.slice(1) : '';
+  for (let i = 1; i <= daysInMonth; i++) {
+    const dayDiv = document.createElement("div");
+    dayDiv.classList.add("day");
+    dayDiv.textContent = i;
 
-      if (categoryText) {
-        let categorySpan = document.createElement('span');
-        categorySpan.textContent = `[${categoryText}]`;
-        categorySpan.style.color = categoryColors[event.category] || 'black'; // Default color
-        div.appendChild(categorySpan);
-      }
+    const fullDate = new Date(year, month, i);
 
+    dayDiv.addEventListener("click", () => {
+      document.querySelectorAll(".day").forEach(d => d.classList.remove("selected"));
+      dayDiv.classList.add("selected");
 
-      div.append(event.text);
-      div.dataset.category = event.category; // Store category on the element
-      div.dataset.index = index;
+      selectedDate = fullDate;
+      document.getElementById("selectedDateTitle").textContent =
+        fullDate.toDateString();
 
-      div.classList.toggle('event-urgent', event.category === 'urgent');
-      const deleteBtn = document.createElement("button");
-      deleteBtn.textContent = "Delete";
-      deleteBtn.style.marginLeft = "5px"; // Add some spacing
-      deleteBtn.addEventListener("click", (e) => {
-        e.stopPropagation(); // Prevent event from bubbling to the event item
-        events[key].splice(index, 1); // Remove the event from the array
-        localStorage.setItem("calendarEvents", JSON.stringify(events)); // Update local storage
-        displayEvents(selectedDate); // Re-render the events
-      });
-      div.appendChild(deleteBtn);
-
-      const editBtn = document.createElement("button");
-      editBtn.textContent = "Edit";
-      editBtn.style.marginLeft = "5px";
-      editBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const newEventText = prompt("Edit event:", event.text);
-        if (newEventText !== null) {
-          // If the user clicks "cancel", the prompt returns null
-          events[key][index].text = newEventText.trim();
-          localStorage.setItem("calendarEvents", JSON.stringify(events));
-          displayEvents(selectedDate);
-        }
-      });
-      div.appendChild(editBtn);
-      eventList.appendChild(div);
+      displayEvents(fullDate);
     });
+
+    calendar.appendChild(dayDiv);
   }
 }
 
-function hasEvents(date) {
+function displayEvents(date) {
+  eventsList.innerHTML = "";
+  selectedEventIndex = null;
+
   const key = formatDateKey(date);
-  return events[key] && events[key].length > 0;
+
+  if (!events[key]) return;
+
+  events[key].forEach((event, index) => {
+    const div = document.createElement("div");
+    div.classList.add("event-item");
+
+    if (event.urgent) div.classList.add("urgent");
+
+    div.textContent = `${event.text} (${event.category})`;
+
+    div.addEventListener("click", () => {
+      document.querySelectorAll(".event-item").forEach(e =>
+        e.classList.remove("active")
+      );
+      div.classList.add("active");
+      selectedEventIndex = index;
+    });
+
+    eventsList.appendChild(div);
+  });
 }
 
+/* ------------------ ADD EVENT ------------------ */
 addEventBtn.addEventListener("click", () => {
   if (!selectedDate || !eventText.value.trim()) return;
 
   const key = formatDateKey(selectedDate);
-  if (!events[key]) events[key] = [];
+  const category =
+    document.querySelector('input[name="category"]:checked')?.value || "general";
 
-  let eventCategory = getEventCategory();
+  if (!events[key]) events[key] = [];
 
   events[key].push({
     text: eventText.value.trim(),
-    category: eventCategory || 'default',
+    category,
+    urgent: false
   });
+
   localStorage.setItem("calendarEvents", JSON.stringify(events));
 
   eventText.value = "";
   displayEvents(selectedDate);
 });
 
-let isUrgent = false;
+/* ------------------ EDIT EVENT ------------------ */
+editBtn.addEventListener("click", () => {
+  if (!selectedDate || selectedEventIndex === null) return;
+
+  const key = formatDateKey(selectedDate);
+  const event = events[key][selectedEventIndex];
+
+  // Load existing event into form
+  eventText.value = event.text;
+
+  // Select correct category radio
+  const radio = document.querySelector(
+    `input[name="category"][value="${event.category}"]`
+  );
+
+  if (radio) radio.checked = true;
+
+  // Remove old event temporarily
+  events[key].splice(selectedEventIndex, 1);
+  localStorage.setItem("calendarEvents", JSON.stringify(events));
+
+  displayEvents(selectedDate);
+});
+
+/* ------------------ TOGGLE URGENT ------------------ */
 urgentBtn.addEventListener("click", () => {
   if (!selectedDate || selectedEventIndex === null) return;
 
   const key = formatDateKey(selectedDate);
-
   const event = events[key][selectedEventIndex];
 
-  if (event.category === "urgent") {
-    event.category = "default";
-  } else {
-    event.category = "urgent";
-  }
+  event.urgent = !event.urgent;
+
+  localStorage.setItem("calendarEvents", JSON.stringify(events));
+  displayEvents(selectedDate);
+});
+
+/* ------------------ DELETE EVENT ------------------ */
+deleteBtn.addEventListener("click", () => {
+  if (!selectedDate || selectedEventIndex === null) return;
+
+  const key = formatDateKey(selectedDate);
+
+  events[key].splice(selectedEventIndex, 1);
 
   localStorage.setItem("calendarEvents", JSON.stringify(events));
 
   displayEvents(selectedDate);
-  renderCalendar(currentDate);
 });
 
-function clearEventCategory(){
-  let selectedCategory = document.querySelector('input[name="eventCategory"]:checked');
- if (selectedCategory){
-  selectedCategory.checked = false;
- }
-
-}
-
-function renderCalendar(date) {
-  daysContainer.innerHTML = "";
-
-  const year = date.getFullYear();
-  const month = date.getMonth();
-  const firstDay = new Date(year, month, 1).getDay();
-  const lastDate = new Date(year, month + 1, 0).getDate();
-  const today = new Date();
-
-  monthYear.textContent =
-    date.toLocaleString("default", { month: "long" }) + " " + year;
-
-  for (let i = 0; i < firstDay; i++) {
-    daysContainer.appendChild(document.createElement("div"));
+/* ------------------ THEME TOGGLE ------------------ */
+themeToggle.addEventListener("click", () => {
+  if (document.documentElement.getAttribute("data-theme") === "dark") {
+    document.documentElement.removeAttribute("data-theme");
+  } else {
+    document.documentElement.setAttribute("data-theme", "dark");
   }
-
-  for (let i = 1; i <= lastDate; i++) {
-    const day = document.createElement("div");
-    day.classList.add("day");
-    day.textContent = i;
-    day.style.position = 'relative';
-
-    if (hasEvents(new Date(year, month, i))) {
-      day.classList.add('has-event');
-      let eventCategory = getEventCategory();
-      if (eventCategory) day.classList.add(`event-dot-${eventCategory}`);
-    }
-
-    const thisDate = new Date(year, month, i);
-
-    if (
-      i === today.getDate() &&
-      month === today.getMonth() &&
-      year === today.getFullYear()
-    ) {
-      day.classList.add("today");
-    }
-
-    if (
-      selectedDate &&
-      thisDate.toDateString() === selectedDate.toDateString()
-    ) {
-      day.classList.add("selected");
-    }
-
-    day.addEventListener("click", () => {
-      selectedDate = thisDate;
-      dateInput.value = selectedDate.toLocaleDateString();
-      datepicker.classList.remove("active");
-      renderCalendar(currentDate);
-      displayEvents(selectedDate);
-    });
-
-    daysContainer.appendChild(day);
-  }
-}
-
-prevBtn.addEventListener("click", () => {
-  currentDate.setMonth(currentDate.getMonth() - 1);
-  renderCalendar(currentDate);
-});
-
-nextBtn.addEventListener("click", () => {
-  currentDate.setMonth(currentDate.getMonth() + 1);
-  renderCalendar(currentDate);
 });
 
 renderCalendar(currentDate);
-
-// Theme Toggle Functionality
-themeToggleBtn.addEventListener('click', () => {
-  if (document.documentElement.getAttribute('data-theme') === 'dark') {
-    document.documentElement.removeAttribute('data-theme');
-    localStorage.setItem('theme', 'light'); // Store the theme preference
-    themeToggleBtn.textContent = "Dark Mode";
-  } else {
-    document.documentElement.setAttribute('data-theme', 'dark');
-    localStorage.setItem('theme', 'dark'); // Store the theme preference
-    themeToggleBtn.textContent = "Light Mode";
-  }
-});
-
-//Check for theme preference at page load
-document.addEventListener('DOMContentLoaded', function() {
-  let theme = localStorage.getItem('theme');
-  if (theme === 'dark') {
-  document.documentElement.setAttribute('data-theme', 'dark');
-  themeToggleBtn.textContent = "Light Mode";
-  } else {
-  themeToggleBtn.textContent = "Dark Mode";
-  }
- });

@@ -1,64 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Event Datepicker</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Professional Calendar</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <button id="theme-toggle"></button>
-<div class="container">
-  
-  <div class="datepicker-wrapper">
-    <input type="text" id="dateInput" placeholder="Select a date" readonly>
 
-    <div class="datepicker" id="datepicker">
-      <div class="header">
-        <button id="prev">&#10094;</button>
-        <div id="monthYear"></div>
-        <button id="next">&#10095;</button>
+  <div class="app">
+
+    <header>
+      <h1>Smart Calendar</h1>
+      <button id="themeToggle">Toggle Theme</button>
+    </header>
+
+    <div class="calendar-container">
+      <div class="calendar-header">
+        <button id="prevMonth">◀</button>
+        <h2 id="monthYear"></h2>
+        <button id="nextMonth">▶</button>
       </div>
 
-      <div class="weekdays">
-        <div>Sun</div><div>Mon</div><div>Tue</div>
-        <div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+      <div class="calendar-grid" id="calendar"></div>
+    </div>
+
+    <div class="event-panel">
+      <h3 id="selectedDateTitle">Select a date</h3>
+
+      <div class="event-form">
+        <input type="text" id="eventText" placeholder="Add event..." />
+
+        <div class="category-options">
+          <label><input type="radio" name="category" value="work"> Work</label>
+          <label><input type="radio" name="category" value="personal"> Personal</label>
+          <label><input type="radio" name="category" value="school"> School</label>
+        </div>
+
+        <button id="addEventBtn">Add Event</button>
       </div>
 
-      <div class="days" id="days"></div>
+      <div class="events-list" id="eventsList"></div>
+
+      <div class="event-actions">
+        <button id="editBtn">Edit</button>
+        <button id="urgentBtn">Urgent</button>
+        <button id="deleteBtn">Delete</button>
+      </div>
+
     </div>
+
   </div>
 
-  <div class="event-panel">
-    <h3 id="eventTitle">Events</h3>
-    
-    <div id="eventList"></div>
-
-    <div class="event-input">
-      <input type="text" id="eventText" placeholder="Add new event...">
-      <button id="addEventBtn">Add</button>
-    </div>
-    <div class="event-categories">
-      <label>
-        <input type="radio" name="eventCategory" value="work" data-color="blue">
-        Work
-      </label>
-      <label>
-        <input type="radio" name="eventCategory" value="personal" data-color="green">
-        Personal
-      </label>
-      <label>
-        <input type="radio" name="eventCategory" value="school" data-color="red">
-        School
-      </label>
-    </div>
-    <div>
-      <button id="urgentBtn">Urgent</button>
-    </div>
-  </div>
-
-</div>
-
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
