@@ -15,6 +15,7 @@ const eventText = document.getElementById("eventText");
 const addEventBtn = document.getElementById("addEventBtn");
 const eventList = document.getElementById("eventList");
 const eventTitle = document.getElementById("eventTitle");
+const urgentBtn = document.getElementById("urgentBtn");
 const themeToggleBtn = document.getElementById("theme-toggle");
 
 
@@ -33,7 +34,10 @@ dateInput.addEventListener("click", () => {
 function formatDateKey(date) {
   return date.toISOString().split("T")[0];
 }
-
+function getEventCategory() {
+  let category = document.querySelector('input[name="eventCategory"]:checked');
+  return category ? category.value : null;
+}
 function displayEvents(date) {
   eventList.innerHTML = "";
   const key = formatDateKey(date);
@@ -44,6 +48,8 @@ function displayEvents(date) {
       const div = document.createElement("div");
       div.className = "event-item";
       div.textContent = event;
+      div.dataset.category = event.category; // Store category on the element
+      div.classList.add(`event-${event.category}`); // Add category class for styling
       const deleteBtn = document.createElement("button");
       deleteBtn.textContent = "Delete";
       deleteBtn.style.marginLeft = "5px"; // Add some spacing
@@ -60,10 +66,10 @@ function displayEvents(date) {
       editBtn.style.marginLeft = "5px";
       editBtn.addEventListener("click", (e) => {
         e.stopPropagation();
-        const newEventText = prompt("Edit event:", event);
+        const newEventText = prompt("Edit event:", event.text);
         if (newEventText !== null) {
           // If the user clicks "cancel", the prompt returns null
-          events[key][index] = newEventText.trim();
+          events.text = newEventText.trim();
           localStorage.setItem("calendarEvents", JSON.stringify(events));
           displayEvents(selectedDate);
         }
@@ -74,18 +80,54 @@ function displayEvents(date) {
   }
 }
 
+function hasEvents(date) {
+  const key = formatDateKey(date);
+  return events[key] && events[key].length > 0;
+}
+
 addEventBtn.addEventListener("click", () => {
   if (!selectedDate || !eventText.value.trim()) return;
 
   const key = formatDateKey(selectedDate);
   if (!events[key]) events[key] = [];
 
-  events[key].push(eventText.value.trim());
+  let eventCategory = getEventCategory();
+
+  events[key].push({
+    text: eventText.value.trim(),
+    category: eventCategory || 'default',
+  });
   localStorage.setItem("calendarEvents", JSON.stringify(events));
 
   eventText.value = "";
   displayEvents(selectedDate);
 });
+
+urgentBtn.addEventListener("click", () => {
+  if (!selectedDate) return;
+
+  const key = formatDateKey(selectedDate);
+
+  if (events[key] && events[key].length > 0) {
+    // Assuming you want to mark all events on that day as urgent
+    events[key].forEach(event => {
+      event.category = 'urgent';
+    });
+
+    localStorage.setItem("calendarEvents", JSON.stringify(events));
+    displayEvents(selectedDate);
+    renderCalendar(currentDate); // Re-render to update dots
+  }
+});
+
+
+function clearEventCategory(){
+  let selectedCategory = document.querySelector('input[name="eventCategory"]:checked');
+ if (selectedCategory){
+  selectedCategory.checked = false;
+ }
+
+}
 
 function renderCalendar(date) {
   daysContainer.innerHTML = "";

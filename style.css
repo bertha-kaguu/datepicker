@@ -124,6 +124,22 @@ body {
   border: 1px solid var(--primary);
 }
 
+.has-event::after {
+  content: '';
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+
+.event-dot-work::after { background-color: blue; }
+.event-dot-personal::after { background-color: green; }
+.event-dot-school::after { background-color: red; }
+.event-dot-urgent::after { background-color: red !important; }
+
 .event-panel {
   width: 250px;
   background: var(--panel-bg);
