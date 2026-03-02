@@ -1,3 +1,4 @@
+let selectedEventIndex = null;
 // Load saved theme
 const savedTheme = localStorage.getItem('theme');
 
@@ -45,6 +46,14 @@ function displayEvents(date) {
     school: 'yellow',
     urgent: 'red'
   };
+  div.addEventListener("click", () => {
+    document.querySelectorAll(".event-item").forEach(item =>
+      item.classList.remove("active-event")
+    );
+  
+    div.classList.add("active-event");
+    selectedEventIndex = index;
+  });
 
   eventList.innerHTML = "";
   const key = formatDateKey(date);
@@ -88,7 +97,7 @@ function displayEvents(date) {
         const newEventText = prompt("Edit event:", event.text);
         if (newEventText !== null) {
           // If the user clicks "cancel", the prompt returns null
-          events.text = newEventText.trim();
+          events[key][index].text = newEventText.trim();
           localStorage.setItem("calendarEvents", JSON.stringify(events));
           displayEvents(selectedDate);
         }
@@ -124,30 +133,23 @@ addEventBtn.addEventListener("click", () => {
 
 let isUrgent = false;
 urgentBtn.addEventListener("click", () => {
-  if (!selectedDate || !eventList.hasChildNodes()) return;
+  if (!selectedDate || selectedEventIndex === null) return;
 
   const key = formatDateKey(selectedDate);
 
-  const eventItems = document.querySelectorAll('.event-item');
+  const event = events[key][selectedEventIndex];
 
-  eventItems.forEach(item => {
-    let index = item.dataset.index;
-    if (events[key] && events[key][index]) {
-      if (item.classList.contains('event-urgent')) {
-        item.classList.remove('event-urgent');
-        events[key][index].category = getEventCategory() || 'default';
-      } else {
-        item.classList.add('event-urgent');
-        events[key][index].category = 'urgent';
-      }
-    }
-    });
+  if (event.category === "urgent") {
+    event.category = "default";
+  } else {
+    event.category = "urgent";
+  }
 
-    localStorage.setItem("calendarEvents", JSON.stringify(events));
-    renderCalendar(currentDate); // Re-render to update dots
-    isUrgent = !isUrgent;
+  localStorage.setItem("calendarEvents", JSON.stringify(events));
+
+  displayEvents(selectedDate);
+  renderCalendar(currentDate);
 });
-
 
 function clearEventCategory(){
   let selectedCategory = document.querySelector('input[name="eventCategory"]:checked');

@@ -154,22 +154,19 @@ body {
   overflow-y: auto;
 }
 
-.event-item {
-  background: var(--primary-light);
-  padding: 6px 8px;
-  margin-bottom: 6px;
-  border-radius: 6px;
-  font-size: 13px;
-}
-
-.event-item.event-urgent {
-  background-color: red;
-}
-
-.event-item span {
+.event-item { 
+  background: var(--primary-light); 
+  padding: 6px 8px; 
+  margin-bottom: 6px; 
+  border-radius: 6px; 
+  font-size: 13px; 
+} 
+.event-item.event-urgent { 
+  background-color: red; 
+} 
+.event-item span { 
   margin-right: 5px;
-}
-
+ }
 .event-input {
   display: flex;
   gap: 5px;
