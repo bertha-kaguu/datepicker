@@ -1,3 +1,9 @@
+// Load saved theme
+const savedTheme = localStorage.getItem('theme');
+
+if (savedTheme === 'dark') {
+  document.documentElement.setAttribute('data-theme', 'dark');
+}
 const dateInput = document.getElementById("dateInput");
 const datepicker = document.getElementById("datepicker");
 const daysContainer = document.getElementById("days");
