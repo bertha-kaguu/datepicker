@@ -1,24 +1,33 @@
 const calendar = document.getElementById("calendar");
 const monthYear = document.getElementById("monthYear");
 const eventsList = document.getElementById("eventsList");
-const eventText = document.getElementById("eventText");
 
+const eventText = document.getElementById("eventText");
 const addEventBtn = document.getElementById("addEventBtn");
-const editBtn = document.getElementById("editBtn");
-const urgentBtn = document.getElementById("urgentBtn");
-const deleteBtn = document.getElementById("deleteBtn");
+const urgentCheckbox = document.getElementById("urgentCheckbox");
 const themeToggle = document.getElementById("themeToggle");
 
 let currentDate = new Date();
 let selectedDate = null;
-let selectedEventIndex = null;
-
 let events = JSON.parse(localStorage.getItem("calendarEvents")) || {};
 
 function formatDateKey(date) {
   return date.toISOString().split("T")[0];
 }
 
+/* ---------------- SAVE EVENTS ---------------- */
+function saveEvents() {
+  localStorage.setItem("calendarEvents", JSON.stringify(events));
+}
+
+/* ---------------- CLEAN EMPTY DATES ---------------- */
+function cleanEmptyDate(key) {
+  if (events[key] && events[key].length === 0) {
+    delete events[key]; // remove empty date completely
+  }
+}
+
+/* ---------------- RENDER CALENDAR ---------------- */
 function renderCalendar(date) {
   calendar.innerHTML = "";
 
@@ -38,6 +47,14 @@ function renderCalendar(date) {
     dayDiv.textContent = i;
 
     const fullDate = new Date(year, month, i);
+    const key = formatDateKey(fullDate);
+
+    // Show dot ONLY if date exists AND has events
+    if (events[key] && events[key].length > 0) {
+      const dot = document.createElement("div");
+      dot.classList.add("day-dot");
+      dayDiv.appendChild(dot);
+    }
 
     dayDiv.addEventListener("click", () => {
       document.querySelectorAll(".day").forEach(d => d.classList.remove("selected"));
@@ -54,12 +71,11 @@ function renderCalendar(date) {
   }
 }
 
+/* ---------------- DISPLAY EVENTS ---------------- */
 function displayEvents(date) {
   eventsList.innerHTML = "";
-  selectedEventIndex = null;
 
   const key = formatDateKey(date);
-
   if (!events[key]) return;
 
   events[key].forEach((event, index) => {
@@ -68,98 +84,93 @@ function displayEvents(date) {
 
     if (event.urgent) div.classList.add("urgent");
 
-    div.textContent = `${event.text} (${event.category})`;
+    div.textContent = event.text;
 
-    div.addEventListener("click", () => {
-      document.querySelectorAll(".event-item").forEach(e =>
-        e.classList.remove("active")
-      );
-      div.classList.add("active");
-      selectedEventIndex = index;
-    });
+    if (event.category) {
+      const label = document.createElement("span");
+      label.classList.add("label", event.category);
+      label.textContent = event.category;
+      div.appendChild(label);
+    }
+
+    div.addEventListener("click", () => showEventActions(div, key, index));
 
     eventsList.appendChild(div);
   });
 }
 
-/* ------------------ ADD EVENT ------------------ */
+/* ---------------- EVENT ACTION POPUP ---------------- */
+function showEventActions(div, key, index) {
+  document.querySelectorAll(".event-actions-popup").forEach(el => el.remove());
+
+  const popup = document.createElement("div");
+  popup.classList.add("event-actions-popup");
+
+  const editBtn = document.createElement("button");
+  editBtn.textContent = "Edit";
+
+  const deleteBtn = document.createElement("button");
+  deleteBtn.textContent = "Delete";
+
+  popup.appendChild(editBtn);
+  popup.appendChild(deleteBtn);
+  div.appendChild(popup);
+
+  editBtn.onclick = () => {
+    eventText.value = events[key][index].text;
+    events[key].splice(index, 1);
+
+    cleanEmptyDate(key);
+    saveEvents();
+    displayEvents(selectedDate);
+    renderCalendar(currentDate);
+  };
+
+  deleteBtn.onclick = () => {
+    events[key].splice(index, 1);
+
+    cleanEmptyDate(key);   // 🔥 IMPORTANT FIX
+    saveEvents();          // 🔥 SAVE IMMEDIATELY
+    displayEvents(selectedDate);
+    renderCalendar(currentDate);
+  };
+}
+
+/* ---------------- ADD EVENT ---------------- */
 addEventBtn.addEventListener("click", () => {
   if (!selectedDate || !eventText.value.trim()) return;
 
   const key = formatDateKey(selectedDate);
+
   const category =
-    document.querySelector('input[name="category"]:checked')?.value || "general";
+    document.querySelector('input[name="category"]:checked')?.value || null;
 
   if (!events[key]) events[key] = [];
 
   events[key].push({
     text: eventText.value.trim(),
     category,
-    urgent: false
+    urgent: urgentCheckbox.checked
   });
 
-  localStorage.setItem("calendarEvents", JSON.stringify(events));
+  saveEvents();  // 🔥 SAVE IMMEDIATELY
 
   eventText.value = "";
-  displayEvents(selectedDate);
-});
-
-/* ------------------ EDIT EVENT ------------------ */
-editBtn.addEventListener("click", () => {
-  if (!selectedDate || selectedEventIndex === null) return;
-
-  const key = formatDateKey(selectedDate);
-  const event = events[key][selectedEventIndex];
-
-  // Load existing event into form
-  eventText.value = event.text;
-
-  // Select correct category radio
-  const radio = document.querySelector(
-    `input[name="category"][value="${event.category}"]`
-  );
-
-  if (radio) radio.checked = true;
-
-  // Remove old event temporarily
-  events[key].splice(selectedEventIndex, 1);
-  localStorage.setItem("calendarEvents", JSON.stringify(events));
+  urgentCheckbox.checked = false;
+  document.querySelectorAll('input[name="category"]').forEach(r => r.checked = false);
 
   displayEvents(selectedDate);
+  renderCalendar(currentDate);
 });
 
-/* ------------------ TOGGLE URGENT ------------------ */
-urgentBtn.addEventListener("click", () => {
-  if (!selectedDate || selectedEventIndex === null) return;
-
-  const key = formatDateKey(selectedDate);
-  const event = events[key][selectedEventIndex];
-
-  event.urgent = !event.urgent;
-
-  localStorage.setItem("calendarEvents", JSON.stringify(events));
-  displayEvents(selectedDate);
-});
-
-/* ------------------ DELETE EVENT ------------------ */
-deleteBtn.addEventListener("click", () => {
-  if (!selectedDate || selectedEventIndex === null) return;
-
-  const key = formatDateKey(selectedDate);
-
-  events[key].splice(selectedEventIndex, 1);
-
-  localStorage.setItem("calendarEvents", JSON.stringify(events));
-
-  displayEvents(selectedDate);
-});
-
-/* ------------------ THEME TOGGLE ------------------ */
+/* ---------------- THEME TOGGLE ---------------- */
 themeToggle.addEventListener("click", () => {
   if (document.documentElement.getAttribute("data-theme") === "dark") {
     document.documentElement.removeAttribute("data-theme");
+    themeToggle.textContent = "Dark";
   } else {
     document.documentElement.setAttribute("data-theme", "dark");
+    themeToggle.textContent = "Light";
   }
 });
 

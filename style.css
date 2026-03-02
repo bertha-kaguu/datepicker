@@ -14,16 +14,12 @@
   --border: #374151;
 }
 
-* {
-  box-sizing: border-box;
-}
-
 body {
   margin: 0;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: sans-serif;
   background: var(--bg);
   color: var(--text);
-  transition: 0.3s ease;
+  transition: 0.3s;
 }
 
 .app {
@@ -41,21 +37,11 @@ header {
   border-bottom: 1px solid var(--border);
 }
 
-.calendar-container {
-  padding: 20px;
-}
-
-.calendar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 8px;
-  margin-top: 20px;
+  padding: 20px;
 }
 
 .day {
@@ -65,17 +51,23 @@ header {
   text-align: center;
   cursor: pointer;
   border: 1px solid var(--border);
-  transition: 0.2s;
-}
-
-.day:hover {
-  background: var(--primary);
-  color: white;
+  position: relative;
 }
 
 .day.selected {
   background: var(--primary);
   color: white;
+}
+
+.day-dot {
+  width: 6px;
+  height: 6px;
+  background: black;
+  border-radius: 50%;
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .event-panel {
@@ -86,56 +78,47 @@ header {
   flex-direction: column;
 }
 
-.event-form input {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 10px;
-}
-
-.category-options {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-button {
-  padding: 8px 12px;
-  border: none;
-  cursor: pointer;
-  background: var(--primary);
-  color: white;
-  border-radius: 5px;
-}
-
 .events-list {
-  flex: 1;
   margin-top: 20px;
-  overflow-y: auto;
 }
 
 .event-item {
   padding: 10px;
   border-radius: 6px;
   margin-bottom: 8px;
-  background: var(--bg);
   border: 1px solid var(--border);
+  position: relative;
   cursor: pointer;
 }
 
-.event-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.event-item.active {
-  outline: 2px solid var(--primary);
-}
-
 .event-item.urgent {
-  border-left: 5px solid red;
+  background: #ef4444;
+  color: white;
 }
 
-button:hover {
-  opacity: 0.9;
+.label {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 12px;
+  margin-left: 8px;
+  color: white;
+}
+
+.label.work { background: green; }
+.label.personal { background: violet; }
+.label.school { background: brown; }
+
+.event-actions-popup {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+}
+
+button {
+  padding: 6px 10px;
+  border: none;
+  cursor: pointer;
+  background: var(--primary);
+  color: white;
+  border-radius: 5px;
 }
