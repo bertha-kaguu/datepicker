@@ -52,7 +52,13 @@ function displayEvents(date) {
       editBtn.style.marginLeft = "5px";
       editBtn.addEventListener("click", (e) => {
         e.stopPropagation();
-        // Implement edit functionality here
+        const newEventText = prompt("Edit event:", event);
+        if (newEventText !== null) {
+          // If the user clicks "cancel", the prompt returns null
+          events[key][index] = newEventText.trim();
+          localStorage.setItem("calendarEvents", JSON.stringify(events));
+          displayEvents(selectedDate);
+        }
       });
       div.appendChild(editBtn);
       eventList.appendChild(div);
