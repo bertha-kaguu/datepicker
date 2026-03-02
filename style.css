@@ -162,6 +162,10 @@ body {
   font-size: 13px;
 }
 
+.event-item.event-urgent {
+  background-color: red;
+}
+
 .event-item span {
   margin-right: 5px;
 }

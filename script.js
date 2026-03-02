@@ -122,24 +122,25 @@ addEventBtn.addEventListener("click", () => {
   displayEvents(selectedDate);
 });
 
-let isUrgent = false;
 urgentBtn.addEventListener("click", () => {
-  if (!selectedDate) return;
+  if (!selectedDate || !eventList.hasChildNodes()) return;
 
   const key = formatDateKey(selectedDate);
 
-  if (!events[key]) return;
+  const eventItems = document.querySelectorAll('.event-item');
 
-  events[key].forEach((event, index) => {
-    if (isUrgent) {
-      event.category = getEventCategory() || 'default';
+  eventItems.forEach(item => {
+    let index = item.dataset.index;
+    if (item.classList.contains('event-urgent')) {
+      item.classList.remove('event-urgent');
+      events[key][index].category = getEventCategory() || 'default';
     } else {
-      event.category = 'urgent';
+      item.classList.add('event-urgent');
+      events[key][index].category = 'urgent';
     }
     });
 
     localStorage.setItem("calendarEvents", JSON.stringify(events));
-    displayEvents(selectedDate);
     renderCalendar(currentDate); // Re-render to update dots
     isUrgent = !isUrgent;
 });
