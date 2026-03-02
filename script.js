@@ -9,6 +9,8 @@ const eventText = document.getElementById("eventText");
 const addEventBtn = document.getElementById("addEventBtn");
 const eventList = document.getElementById("eventList");
 const eventTitle = document.getElementById("eventTitle");
+const themeToggleBtn = document.getElementById("theme-toggle");
+
 
 let currentDate = new Date();
 let selectedDate = null;
@@ -139,3 +141,14 @@ nextBtn.addEventListener("click", () => {
 });
 
 renderCalendar(currentDate);
+
+// Theme Toggle Functionality
+themeToggleBtn.addEventListener('click', () => {
+  if (document.documentElement.getAttribute('data-theme') === 'dark') {
+    document.documentElement.removeAttribute('data-theme');
+    localStorage.setItem('theme', 'light'); // Store the theme preference
+  } else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    localStorage.setItem('theme', 'dark'); // Store the theme preference
+  }
+});
