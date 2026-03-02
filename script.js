@@ -32,10 +32,29 @@ function displayEvents(date) {
   eventTitle.textContent = `Events for ${date.toDateString()}`;
 
   if (events[key]) {
-    events[key].forEach(event => {
+    events[key].forEach((event, index )=> {
       const div = document.createElement("div");
       div.className = "event-item";
       div.textContent = event;
+      const deleteBtn = document.createElement("button");
+      deleteBtn.textContent = "Delete";
+      deleteBtn.style.marginLeft = "5px"; // Add some spacing
+      deleteBtn.addEventListener("click", (e) => {
+        e.stopPropagation(); // Prevent event from bubbling to the event item
+        events[key].splice(index, 1); // Remove the event from the array
+        localStorage.setItem("calendarEvents", JSON.stringify(events)); // Update local storage
+        displayEvents(selectedDate); // Re-render the events
+      });
+      div.appendChild(deleteBtn);
+
+      const editBtn = document.createElement("button");
+      editBtn.textContent = "Edit";
+      editBtn.style.marginLeft = "5px";
+      editBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        // Implement edit functionality here
+      });
+      div.appendChild(editBtn);
       eventList.appendChild(div);
     });
   }
