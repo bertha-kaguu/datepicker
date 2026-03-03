@@ -8,6 +8,8 @@ const urgentCheckbox = document.getElementById("urgentCheckbox");
 const themeToggle = document.getElementById("themeToggle");
 const prevMonthBtn = document.getElementById("prevMonth");
 const nextMonthBtn = document.getElementById("nextMonth");
+const prevYearBtn = document.getElementById("prevYear");
+const nextYearBtn = document.getElementById("nextYear");
 
 let currentDate = new Date();
 let selectedDate = null;
@@ -209,6 +211,22 @@ nextMonthBtn.addEventListener("click", () => {
   currentDate = new Date(
     currentDate.getFullYear(),
     currentDate.getMonth() + 1,
+    1
+  );
+  renderCalendar(currentDate);
+});
+prevYearBtn.addEventListener("click", () => {
+  currentDate = new Date(
+    currentDate.getFullYear() - 1,
+    currentDate.getMonth(),
+    1
+  );
+  renderCalendar(currentDate);
+});
+nextYearBtn.addEventListener("click", () => {
+  currentDate = new Date(
+    currentDate.getFullYear() + 1,
+    currentDate.getMonth(),
     1
   );
   renderCalendar(currentDate);
