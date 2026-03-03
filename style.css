@@ -77,6 +77,14 @@ header {
   transform: translateX(-50%);
 }
 
+@media (max-width: 768px) {
+  .app {
+    grid-template-columns: 1fr; /* Stack the columns */
+    height: auto; /* Adjust height for content */
+  }
+  .event-panel { border-left: none; }
+}
+
 .event-panel {
   padding: 20px;
   border-left: 1px solid var(--border);
