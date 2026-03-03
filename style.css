@@ -131,6 +131,7 @@ button {
   border: none;
   cursor: pointer;
   background: var(--primary);
+  margin: 0 2px;
   color: white;
   border-radius: 5px;
 }
