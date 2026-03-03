@@ -114,6 +114,11 @@ header {
   gap: 8px;
 }
 
+.year-month-buttons {
+  display: flex;
+  align-items: center;
+}
+
 button {
   padding: 6px 10px;
   border: none;
