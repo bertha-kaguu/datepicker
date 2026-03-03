@@ -153,3 +153,11 @@ button {
   color: white;
   border-radius: 5px;
 }
+
+.category-options {
+  margin-bottom: 10px;
+}
+
+.urgent-checkbox {
+  text-align: center;
+}
