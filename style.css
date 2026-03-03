@@ -89,6 +89,14 @@ header {
   margin-top: 20px;
 }
 
+#eventText {
+  width: 90%;
+  height: 30%;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
 .event-item {
   padding: 10px;
   border-radius: 6px;
