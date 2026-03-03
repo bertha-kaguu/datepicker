@@ -69,6 +69,11 @@ function renderCalendar(date) {
     const fullDate = new Date(year, month, i);
     const key = formatDateKey(fullDate);
 
+    const today = new Date();
+    if (fullDate.toDateString() === today.toDateString()){
+      dayDiv.classList.add("today");
+    }
+
     /* SHOW DOT ONLY IF REAL EVENTS EXIST */
     if (events[key] && events[key].length > 0) {
       const dot = document.createElement("div");

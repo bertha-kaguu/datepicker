@@ -66,6 +66,10 @@ header {
   color: white;
 }
 
+.day.today {
+  font-weight: bold;
+}
+
 .day-dot {
   width: 6px;
   height: 6px;
